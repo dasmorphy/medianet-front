@@ -1,0 +1,89 @@
+# Orquestación de la solución completa: Base de datos + 2 microservicios + Frontend.
+# Levantar todo con: docker compose up --build
+#
+# Nota: los servicios `clientes-service` y `cuentas-service` corresponden al
+# backend (Spring Boot) generado en el prompt anterior. Aquí se referencian sus
+# rutas de build relativas; ajústalas a la ubicación real de cada microservicio.
+version: "3.8"
+
+services:
+  # ---------- Base de datos relacional ----------
+  postgres:
+    image: postgres:15-alpine
+    container_name: banco-db
+    environment:
+      POSTGRES_USER: banco
+      POSTGRES_PASSWORD: banco123
+      POSTGRES_DB: banco
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U banco"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - banco-net
+
+  # ---------- Microservicio de Clientes ----------
+  clientes-service:
+    build:
+      context: ../backend/clientes-service
+    container_name: banco-clientes
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/banco
+      SPRING_DATASOURCE_USERNAME: banco
+      SPRING_DATASOURCE_PASSWORD: banco123
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - banco-net
+
+  # ---------- Microservicio de Cuentas y Movimientos ----------
+  cuentas-service:
+    build:
+      context: ../backend/cuentas-service
+    container_name: banco-cuentas
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/banco
+      SPRING_DATASOURCE_USERNAME: banco
+      SPRING_DATASOURCE_PASSWORD: banco123
+      SERVER_PORT: 8081
+      # URL interna del microservicio de clientes para la comunicación entre servicios
+      CLIENTES_SERVICE_URL: http://clientes-service:8080/api
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clientes-service:
+        condition: service_started
+    networks:
+      - banco-net
+
+  # ---------- Frontend Angular (Nginx) ----------
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: banco-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - clientes-service
+      - cuentas-service
+    networks:
+      - banco-net
+
+networks:
+  banco-net:
+    driver: bridge
+
+volumes:
+  postgres-data:

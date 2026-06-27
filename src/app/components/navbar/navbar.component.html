@@ -1,0 +1,31 @@
+<mat-toolbar color="primary" class="app-toolbar">
+  <mat-icon class="brand-icon">account_balance</mat-icon>
+  <span class="brand">Banco · Front Prueba</span>
+
+  <span class="spacer"></span>
+
+  <nav class="nav-links d-none d-md-flex">
+    <a
+      *ngFor="let item of items"
+      mat-button
+      [routerLink]="item.ruta"
+      routerLinkActive="active-link"
+    >
+      <mat-icon>{{ item.icono }}</mat-icon>
+      <span class="ms-1">{{ item.etiqueta }}</span>
+    </a>
+  </nav>
+
+  <!-- Menú compacto en pantallas pequeñas -->
+  <nav class="d-flex d-md-none">
+    <a
+      *ngFor="let item of items"
+      mat-icon-button
+      [routerLink]="item.ruta"
+      routerLinkActive="active-link"
+      [matTooltip]="item.etiqueta"
+    >
+      <mat-icon>{{ item.icono }}</mat-icon>
+    </a>
+  </nav>
+</mat-toolbar>

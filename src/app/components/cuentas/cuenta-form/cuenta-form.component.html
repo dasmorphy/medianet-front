@@ -1,0 +1,61 @@
+<h2 mat-dialog-title>{{ esEdicion ? 'Editar cuenta' : 'Nueva cuenta' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="guardar()">
+  <mat-dialog-content>
+    <div class="row g-2">
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Número de cuenta</mat-label>
+          <input matInput formControlName="numeroCuenta" [readonly]="esEdicion" />
+          <mat-error *ngIf="f['numeroCuenta'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="f['numeroCuenta'].hasError('pattern')">Sólo dígitos (4 a 20)</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tipo de cuenta</mat-label>
+          <mat-select formControlName="tipoCuenta">
+            <mat-option *ngFor="let t of tiposCuenta" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="f['tipoCuenta'].hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Saldo inicial</mat-label>
+          <input matInput type="number" formControlName="saldoInicial" />
+          <span matPrefix>$&nbsp;</span>
+          <mat-error *ngIf="f['saldoInicial'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="f['saldoInicial'].hasError('min')">No puede ser negativo</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cliente</mat-label>
+          <mat-select formControlName="clienteId">
+            <mat-option *ngFor="let cl of data.clientes" [value]="cl.clienteId">
+              {{ cl.nombre }} ({{ cl.clienteId }})
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="f['clienteId'].hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 d-flex align-items-center">
+        <mat-slide-toggle formControlName="estado" color="primary">
+          Estado: {{ f['estado'].value ? 'Activo' : 'Inactivo' }}
+        </mat-slide-toggle>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+      Guardar
+    </button>
+  </mat-dialog-actions>
+</form>

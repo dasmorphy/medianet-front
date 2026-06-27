@@ -1,0 +1,98 @@
+<h2 mat-dialog-title>{{ esEdicion ? 'Editar cliente' : 'Nuevo cliente' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="guardar()">
+  <mat-dialog-content>
+    <div class="row g-2">
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cliente ID</mat-label>
+          <input matInput formControlName="clienteId" [readonly]="esEdicion" />
+          <mat-error *ngIf="f['clienteId'].hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre" />
+          <mat-error *ngIf="f['nombre'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="f['nombre'].hasError('minlength')">Mínimo 3 caracteres</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Género</mat-label>
+          <mat-select formControlName="genero">
+            <mat-option *ngFor="let g of generos" [value]="g">{{ g }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="f['genero'].hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Edad</mat-label>
+          <input matInput type="number" formControlName="edad" />
+          <mat-error *ngIf="f['edad'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="f['edad'].hasError('min') || f['edad'].hasError('max')">
+            Debe estar entre 18 y 120
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Identificación</mat-label>
+          <input matInput formControlName="identificacion" />
+          <mat-error *ngIf="f['identificacion'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="f['identificacion'].hasError('pattern')">
+            Sólo dígitos (6 a 15)
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="telefono" />
+          <mat-error *ngIf="f['telefono'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="f['telefono'].hasError('pattern')">
+            Sólo dígitos (7 a 15)
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="direccion" />
+          <mat-error *ngIf="f['direccion'].hasError('required')">Requerido</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input matInput type="password" formControlName="password" />
+          <mat-hint *ngIf="esEdicion">Dejar vacío para no cambiarla</mat-hint>
+          <mat-error *ngIf="f['password'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="f['password'].hasError('minlength')">Mínimo 4 caracteres</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="col-12 col-md-6 d-flex align-items-center">
+        <mat-slide-toggle formControlName="estado" color="primary">
+          Estado: {{ f['estado'].value ? 'Activo' : 'Inactivo' }}
+        </mat-slide-toggle>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+      Guardar
+    </button>
+  </mat-dialog-actions>
+</form>
